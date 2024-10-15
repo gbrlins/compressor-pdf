@@ -2,6 +2,7 @@ Aplicação que comprime um arquivo PDF
 
 Pronto para ser usado no Kubernetes como exemplo.
 
+Exemplo de deployment.yaml
 ```jsx
 apiVersion: apps/v1
 kind: Deployment
@@ -36,4 +37,22 @@ image: alpine
 imagePullPolicy: Always
 name: ulimit-init
 restartPolicy: Always
+```
+
+Exemplo service.yaml
+```jsx
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-compressor-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: pdf-compressor
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30007
 ```
