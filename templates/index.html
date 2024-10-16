@@ -7,7 +7,8 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #e9ecef;
+            background: linear-gradient(to right, #2ecc71, #74b9ff, #663399);
+            height: 100vh;
             margin: 0;
             padding: 20px;
             text-align: center;
@@ -51,6 +52,10 @@
         button:hover {
             background-color: #218838;
         }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         .download-link {
             margin-top: 20px;
             display: none; /* Oculto inicialmente */
@@ -58,19 +63,19 @@
         .footer {
             margin-top: 40px;
             font-size: 0.8em;
-            color: #777;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
-    <img src="https://documentation.suse.com/assets/SUSELogo.png" alt="Logo SUSE" width="200"> <!-- Substitua pelo caminho correto do logo -->
+    <img src="/static/logo-compress.jpg" alt="Logo Compressão" width="200">
     <h1>Comprimir PDF</h1>
     <form id="compressForm" action="/compress" method="post" enctype="multipart/form-data">
         <label for="file">Escolha um arquivo PDF:</label>
         <input type="file" name="file" required>
         <br>
         <label for="compress_factor">Fator de compressão (padrão 1.5):</label>
-        <input type="text" name="compress_factor" value="1.5">
+        <input type="text" name="compress_factor" value="1.5" placeholder="Fator de compressão (ex: 1.5)">
         <br>
         <button type="submit">Comprimir</button>
     </form>
@@ -83,7 +88,22 @@
     <script>
         // Função para lidar com a resposta do formulário
         document.getElementById('compressForm').onsubmit = function(event) {
+            var fileInput = document.querySelector('input[type="file"]');
+            var filePath = fileInput.value;
+
+            // Verifica a extensão do arquivo
+            var allowedExtensions = /(\.pdf)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Por favor, envie um arquivo PDF.');
+                fileInput.value = '';
+                event.preventDefault(); // Impede o envio do formulário
+                return false;
+            }
+
             event.preventDefault(); // Impede o envio padrão do formulário
+            var submitButton = event.target.querySelector('button');
+            submitButton.disabled = true;
+            submitButton.innerHTML = 'Processando...';
 
             var formData = new FormData(this);
             var xhr = new XMLHttpRequest();
@@ -91,11 +111,17 @@
             xhr.responseType = "blob"; // Espera um blob como resposta
 
             xhr.onload = function() {
+                submitButton.disabled = false; // Habilita o botão novamente
+                submitButton.innerHTML = 'Comprimir';
+
                 if (xhr.status === 200) {
                     // Cria um URL para o blob recebido
                     var url = window.URL.createObjectURL(xhr.response);
+
+                    var fullUrl = "compressor/" + url;
+
                     var downloadLink = document.getElementById('downloadLink');
-                    downloadLink.href = url;
+                    downloadLink.href = fullUrl;
                     downloadLink.download = "comprimido_" + new Date().toISOString().slice(0, 10) + ".pdf"; // Nome do arquivo
 
                     // Mostra o link para download
@@ -109,7 +135,7 @@
         };
     </script>
     <div class="footer">
-        <p>&copy; 2024 Lins. Use a vontade.</p>
+        <p>&copy; 2024 Lins. Use sem moderação. v1</p>
     </div>
 </body>
 </html>
