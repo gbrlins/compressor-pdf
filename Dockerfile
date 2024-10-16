@@ -11,4 +11,4 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Definir o ponto de entrada para o contêiner
-ENTRYPOINT ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "compress_pdf:app"]
+ENTRYPOINT ["gunicorn", "-w", "1", "-b", "0.0.0.0:8080", "compress_pdf:app"]
