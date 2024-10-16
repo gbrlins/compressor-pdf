@@ -10,7 +10,7 @@ import tempfile
 # Configuração de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 def compress_pdf(input_path, output_path, compress_factor=1.2):
     logging.info(f'Iniciando a compressão do PDF: {input_path}')
@@ -81,7 +81,3 @@ def compress_endpoint():
             os.remove(input_path)  # Limpar o arquivo temporário
             if os.path.exists(output_path):
                 os.remove(output_path)  # Limpar o arquivo comprimido se for necessário
-
-# O bloco abaixo não será usado quando o Gunicorn é executado
-# if __name__ == "__main__":
-#     app.run(host='0.0.0.0', port=8080)
